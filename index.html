@@ -1,40 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Connect to Firestore</title>
+  <title>Insert Data to Firestore</title>
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 </head>
 <body>
-  <h1>Firestore Access</h1>
-  <button onclick="addData()">Add Data</button>
+
+  <button onclick="addNyimbo()">Add Nyimbo Data</button>
+  <p id="message"></p>
 
   <script>
+    // Your Firebase config
     const firebaseConfig = {
-  apiKey: "AIzaSyCG_-UFFJ4jCaeFrFRDj8v1Q6QSnWtVOrc",
-  authDomain: "nyimbo-64d23.firebaseapp.com",
-  projectId: "nyimbo-64d23",
-  storageBucket: "nyimbo-64d23.firebasestorage.app",
-  messagingSenderId: "976903482180",
-  appId: "1:976903482180:web:8125b31850f1e221654511",
-  measurementId: "G-0KV815N7JP"
-};
+      apiKey: "AIzaSyCG_-UFFJ4jCaeFrFRDj8v1Q6QSnWtVOrc",
+      authDomain: "nyimbo-64d23.firebaseapp.com",
+      projectId: "nyimbo-64d23",
+      storageBucket: "nyimbo-64d23.firebasestorage.app",
+      messagingSenderId: "976903482180",
+      appId: "1:976903482180:web:8125b31850f1e221654511",
+      measurementId: "G-0KV815N7JP"
+    };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    // Initialize Firebase app and Firestore
+    const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function addData() {
-      db.collection("nyimbos").add({
-       number: 268,
-      title: "MADZI A BANGO",
-      verse: "udzalira dhdsjjjjjjjjjjjdgf"
-      }).then((docRef) => {
-        alert("Added with ID: " + docRef.id);
-      }).catch((error) => {
-        alert("Error: " + error);
-      });
+    // Function to add data
+    async function addNyimbo() {
+      const msgEl = document.getElementById('message');
+      msgEl.textContent = 'Adding data...';
+
+      try {
+        const docRef = await db.collection("nyimbos").add({
+          number: 268,
+          title: "ANTHU A LERO",
+          verse: "odya zapadhegd padziko pano panli nthu"
+        });
+        msgEl.textContent = "Data added successfully with ID: " + docRef.id;
+      } catch (error) {
+        msgEl.textContent = "Error adding document: " + error.message;
+      }
     }
   </script>
+
 </body>
 </html>
