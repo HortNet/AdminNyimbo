@@ -3,15 +3,11 @@
 <head>
   <title>Insert Data to Firestore</title>
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-</head>
-<body>
+  <script type="module">
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <button onclick="addNyimbo()">Add Nyimbo Data</button>
-  <p id="message"></p>
-
-  <script>
     // Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCG_-UFFJ4jCaeFrFRDj8v1Q6QSnWtVOrc",
@@ -23,17 +19,17 @@
       measurementId: "G-0KV815N7JP"
     };
 
-    // Initialize Firebase app and Firestore
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    // Function to add data
-    async function addNyimbo() {
+    // Expose addNyimbo to global scope so button can access it
+    window.addNyimbo = async function() {
       const msgEl = document.getElementById('message');
       msgEl.textContent = 'Adding data...';
 
       try {
-        const docRef = await db.collection("nyimbos").add({
+        const docRef = await addDoc(collection(db, "nyimbos"), {
           number: 268,
           title: "ANTHU A LERO",
           verse: "odya zapadhegd padziko pano panli nthu"
@@ -44,6 +40,11 @@
       }
     }
   </script>
+</head>
+<body>
+
+  <button onclick="addNyimbo()">Add Nyimbo Data</button>
+  <p id="message"></p>
 
 </body>
 </html>
