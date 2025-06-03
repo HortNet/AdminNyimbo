@@ -2,13 +2,10 @@
 <html>
 <head>
   <title>Insert Data to Firestore</title>
-  <!-- Firebase SDK -->
   <script type="module">
-    // Import the functions you need from the SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCG_-UFFJ4jCaeFrFRDj8v1Q6QSnWtVOrc",
       authDomain: "nyimbo-64d23.firebaseapp.com",
@@ -19,12 +16,11 @@
       measurementId: "G-0KV815N7JP"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Expose addNyimbo to global scope so button can access it
-    window.addNyimbo = async function() {
+    // Define function AFTER db is ready
+    async function addNyimbo() {
       const msgEl = document.getElementById('message');
       msgEl.textContent = 'Adding data...';
 
@@ -39,6 +35,9 @@
         msgEl.textContent = "Error adding document: " + error.message;
       }
     }
+
+    // Expose the function globally so button can call it
+    window.addNyimbo = addNyimbo;
   </script>
 </head>
 <body>
