@@ -25,9 +25,10 @@
     const db = firebase.firestore();
 
     function addData() {
-      db.collection("messages").add({
-        text: "This is from the web!",
-        time: firebase.firestore.FieldValue.serverTimestamp()
+      db.collection("nyimbos").add({
+       number: 168,
+      title: "MADZI A BANGO",
+      verse: "udzalira dhdsjjjjjjjjjjjdgf"
       }).then((docRef) => {
         alert("Added with ID: " + docRef.id);
       }).catch((error) => {
