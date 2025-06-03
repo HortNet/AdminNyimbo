@@ -1,77 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Upload to Google Drive</title>
+  <title>Connect to Firestore</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 </head>
 <body>
-  <h2>Upload a file to Google Drive and get shareable link</h2>
-  <input type="file" id="fileInput" />
-  <button onclick="uploadFile()">Upload</button>
-  <p id="linkParagraph">Shareable Link: <span id="shareLink"></span></p>
+  <h1>Firestore Access</h1>
+  <button onclick="addData()">Add Data</button>
 
-  <!-- Load Google API Client -->
-  <script src="https://apis.google.com/js/api.js"></script>
   <script>
-    const CLIENT_ID = '290162500883-ldvfdquq9e8jlutuljmdmad8dh6319ak.apps.googleusercontent.com'; // Replace with your OAuth 2.0 Client ID
-    const API_KEY = 'AIzaSyDvjRySVgHAUOli9KoFLCLmGHcxum_Ab58'; // Optional but can be helpful
+    const firebaseConfig = {
+  apiKey: "AIzaSyCG_-UFFJ4jCaeFrFRDj8v1Q6QSnWtVOrc",
+  authDomain: "nyimbo-64d23.firebaseapp.com",
+  projectId: "nyimbo-64d23",
+  storageBucket: "nyimbo-64d23.firebasestorage.app",
+  messagingSenderId: "976903482180",
+  appId: "1:976903482180:web:8125b31850f1e221654511",
+  measurementId: "G-0KV815N7JP"
+};
 
-    const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    function authenticate() {
-      return gapi.auth2.getAuthInstance()
-        .signIn({ scope: SCOPES })
-        .then(() => console.log("Signed in"))
-        .catch(err => console.error("Error signing in", err));
-    }
-
-    function loadClient() {
-      gapi.client.setApiKey(API_KEY);
-      return gapi.client.load("https://content.googleapis.com/discovery/v1/apis/drive/v3/rest")
-        .then(() => console.log("GAPI client loaded"))
-        .catch(err => console.error("Error loading GAPI client", err));
-    }
-
-    function uploadFile() {
-      const fileInput = document.getElementById('fileInput');
-      const file = fileInput.files[0];
-      if (!file) return alert("No file selected");
-
-      authenticate().then(loadClient).then(() => {
-        const metadata = {
-          name: file.name,
-          mimeType: file.type
-        };
-
-        const form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-        form.append('file', file);
-
-        fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-          method: 'POST',
-          headers: new Headers({ 'Authorization': 'Bearer ' + gapi.auth.getToken().access_token }),
-          body: form
-        }).then(response => response.json())
-          .then(file => {
-            return fetch(`https://www.googleapis.com/drive/v3/files/${file.id}/permissions`, {
-              method: 'POST',
-              headers: new Headers({
-                'Authorization': 'Bearer ' + gapi.auth.getToken().access_token,
-                'Content-Type': 'application/json'
-              }),
-              body: JSON.stringify({ role: 'reader', type: 'anyone' })
-            }).then(() => {
-              const link = `https://drive.google.com/file/d/${file.id}/view?usp=sharing`;
-              document.getElementById('shareLink').textContent = link;
-              document.getElementById('shareLink').style.color = 'blue';
-            });
-          })
-          .catch(err => console.error("Upload error", err));
+    function addData() {
+      db.collection("messages").add({
+        text: "This is from the web!",
+        time: firebase.firestore.FieldValue.serverTimestamp()
+      }).then((docRef) => {
+        alert("Added with ID: " + docRef.id);
+      }).catch((error) => {
+        alert("Error: " + error);
       });
     }
-
-    gapi.load("client:auth2", () => {
-      gapi.auth2.init({ client_id: CLIENT_ID });
-    });
   </script>
 </body>
 </html>
