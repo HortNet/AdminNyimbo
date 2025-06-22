@@ -3,7 +3,12 @@
 <head>
   <title>Insert Data to Firestore</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -72,21 +77,61 @@ deleteByNumberField();
     window.addNyimbo = addNyimbo;
   </script>
 </head>
-<body class="bg-blue-900 flex flex-vertical items-center justify-center h-screen">
-<h1 class="text-center text-white text-2xl font-bold">MPINGO WOBWEZELETSA SABATA LA YEHOVA </h1>
-<h1 class="text-center text-white text-2xl m-4">NYIMBO ZOIMBIRA YEHOVA </h1>
-<h1 class="text-center text-2xl font-bold text-yellow-400 m-12" >ADMIN  </h1>
-<div class="bg-blue-950 justify-content-center text-center m-12 rounded-2xl">
-  <form>
-    <input class="rounded-2xl p-4 mt-5"type="number" id="number" placeholder="Number"required><br>
-    <input class="rounded-2xl p-5 mt-5"type="text" id="title" placeholder="Mutu wa nyimbo"required><br>
-   <textarea class="p-5 m-12"id="verse" style=" height:250px;" placeholder="lembani verse yonse muno..."required></textarea>
-   <button class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="deleteByNumberField()" >delete nyimbo</button>
-  <button type="button"class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="addNyimbo()">Save Nyimbo</button>
-  <p id="message"></p></form>
+<body style="background-color: #1B676F;"class="bg-blue-900 flex flex-col items-center justify-center min-h-screen p-4">
 
+  <h1 class="text-center text-white text-2xl font-bold max-w-xl">MPINGO WOBWEZELETSA SABATA LA YEHOVA</h1>
+  <h2 class="text-center text-white text-2xl mt-4 max-w-xl">NYIMBO ZOIMBIRA YEHOVA</h2>
+  <h3 class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white m-8">ADMIN</h3>
+
+  <div  style="background-color:#4AB8CE;"class=" mt-4 rounded-2xl p-6 max-w-xl w-full">
+
+    <form class="flex flex-col space-y-6">
+
+      <input
+        type="number"
+        id="number"
+        placeholder="Number"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+      <input
+        type="text"
+        id="title"
+        placeholder="Mutu wa nyimbo"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+      <textarea
+        id="verse"
+        placeholder="lembani verse yonse muno..."
+        required
+        rows="8"
+        class="rounded-2xl p-4 w-full text-black resize-none"
+      ></textarea>
+
+      <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
+  
+
+  <div class="ml-auto">
+    <button
+      type="button"
+      onclick="addNyimbo()"
+      class="bg-yellow-600 rounded-full p-3 text-white font-bold w-full sm:w-auto"
+    >
+      Save Nyimbo
+    </button>
+  </div>
 </div>
-    
+
+
+      <p id="message" class="text-center text-white mt-4 min-h-[1.5em]"></p>
+
+    </form>
+
+  </div>
 
 </body>
+
 </html>
