@@ -2,6 +2,8 @@
 <html>
 <head>
   <title>Insert Data to Firestore</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -19,16 +21,35 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+async function deleteByNumberField() {
+  const q = query(
+    collection(db, "nyimbos"),          // Replace with your collection
+    where("number", "==", 269)        // Replace with your field and number
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach(async (document) => {
+    await deleteDoc(doc(db, "nyimbos", document.id));
+    console.log(`Deleted document with ID: ${document.id}`);
+  });
+}
+
+deleteByNumberField();
+
     // Define function AFTER db is ready
     async function addNyimbo() {
       const msgEl = document.getElementById('message');
       msgEl.textContent = 'Adding data...';
 
       try {
+        const number=document.getElementById("number").value;
+        const title=document.getElementById("title").value;
+        const verse=document.getElementById("verse").value;
         const docRef = await addDoc(collection(db, "nyimbos"), {
-          number: 268,
-          title: "ANTHU A LERO",
-          verse: "odya zapadhegd padziko pano panli nthu"
+          number: number,
+          title: title,
+          verse: verse
         });
         msgEl.textContent = "Data added successfully with ID: " + docRef.id;
       } catch (error) {
@@ -40,10 +61,19 @@
     window.addNyimbo = addNyimbo;
   </script>
 </head>
-<body>
-
-  <button onclick="addNyimbo()">Add Nyimbo Data</button>
+<body class="bg-blue-900 flex flex-vertical items-center justify-center h-screen">
+<h1 class="text-center text-white text-2xl font-bold">MPINGO WOBWEZELETSA SABATA LA YEHOVA </h1>
+<h1 class="text-center text-white text-2xl m-4">NYIMBO ZOIMBIRA YEHOVA </h1>
+<h1 class="text-center text-2xl font-bold text-yellow-400 m-12" >ADMIN  </h1>
+<div class="bg-blue-950 justify-content-center text-center m-12 rounded-2xl">
+<input class="rounded-2xl p-4 mt-5"type="number" id="number" placeholder="Number"><br>
+    <input class="rounded-2xl p-5 mt-5"type="text" id="title" placeholder="Mutu wa nyimbo"><br>
+   <textarea class="p-5 m-12"id="verse" style=" height:250px;" placeholder="lembani verse yonse muno..."></textarea>
+   <button class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="deleteByNumberField()">delete nyimbo</button>
+  <button class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="addNyimbo()">Save Nyimbo</button>
   <p id="message"></p>
+</div>
+    
 
 </body>
 </html>
