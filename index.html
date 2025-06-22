@@ -78,12 +78,31 @@ deleteByNumberField();
     // Expose the function globally so button can call it
     window.addNyimbo = addNyimbo;
   </script>
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body style="background-color: #1B676F;"class="bg-blue-900 flex flex-col items-center justify-center min-h-screen p-4">
 
   <h1 class="text-center text-white text-2xl font-bold max-w-xl">MPINGO WOBWEZELETSA SABATA LA YEHOVA</h1>
   <h2 class="text-center text-white text-2xl mt-4 max-w-xl">NYIMBO ZOIMBIRA YEHOVA</h2>
-  <h3 class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white m-8">ADMIN</h3>
+
+  <div class="grid sm:grid-cols-3 m-12">
+  <div class="bg-red-200 h-64 flex justify-center items-center">
+    
+ <button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 m-8"><span class="material-icons text-6xl ">add</span>Add Nyimbo</button>
+  </div>
+  <div class="bg-green-200 h-64 flex justify-center items-center">
+    
+ <button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 m-8"><span class="material-icons text-6xl ">delete</span>Delete Nyimbo</button>
+  </div>
+  <div class="bg-blue-300 h-64 flex justify-center items-center">
+    
+ <div>
+<button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 m-8"><span class="material-icons text-6xl ">audio_file</span>Upload Audio</button>
+ </div>
+
+  </div>
+</div>
+ 
 
   <div  style="background-color:#4AB8CE;"class=" mt-4 rounded-2xl p-6 max-w-xl w-full">
 
@@ -120,9 +139,9 @@ deleteByNumberField();
     <button
       type="button"
       onclick="addNyimbo()"
-      class="bg-yellow-600 rounded-full p-3 text-white font-bold w-full sm:w-auto"
+      class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto"
     >
-      Save Nyimbo
+      Save
     </button>
   </div>
 </div>
