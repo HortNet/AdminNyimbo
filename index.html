@@ -5,8 +5,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 
     const firebaseConfig = {
       apiKey: "AIzaSyCG_-UFFJ4jCaeFrFRDj8v1Q6QSnWtVOrc",
@@ -38,24 +39,34 @@ async function deleteByNumberField() {
 deleteByNumberField();
 
     // Define function AFTER db is ready
-    async function addNyimbo() {
-      const msgEl = document.getElementById('message');
-      msgEl.textContent = 'Adding data...';
+   async function addNyimbo() {
+  const msgEl = document.getElementById('message');
+  const number = document.getElementById("number").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const verse = document.getElementById("verse").value.trim();
 
-      try {
-        const number=document.getElementById("number").value;
-        const title=document.getElementById("title").value;
-        const verse=document.getElementById("verse").value;
-        const docRef = await addDoc(collection(db, "nyimbos"), {
-          number: number,
-          title: title,
-          verse: verse
-        });
-        msgEl.textContent = "Data added successfully with ID: " + docRef.id;
-      } catch (error) {
-        msgEl.textContent = "Error adding document: " + error.message;
-      }
-    }
+  // Validation
+  if (!number || !title || !verse) {
+    msgEl.textContent = "Please fill in all fields before saving.";
+    return; // stop execution if invalid
+  }
+
+  msgEl.textContent = 'Adding data...';
+
+  try {
+    const docRef = await addDoc(collection(db, "nyimbos"), {
+      number: parseInt(number),
+      title: title,
+      verse: verse,
+      timestamp: serverTimestamp(),
+      isDeleted: false
+    });
+    msgEl.textContent = "Data added successfully with ID: " + docRef.id;
+  } catch (error) {
+    msgEl.textContent = "Error adding document: " + error.message;
+  }
+}
+
 
     // Expose the function globally so button can call it
     window.addNyimbo = addNyimbo;
@@ -66,12 +77,14 @@ deleteByNumberField();
 <h1 class="text-center text-white text-2xl m-4">NYIMBO ZOIMBIRA YEHOVA </h1>
 <h1 class="text-center text-2xl font-bold text-yellow-400 m-12" >ADMIN  </h1>
 <div class="bg-blue-950 justify-content-center text-center m-12 rounded-2xl">
-<input class="rounded-2xl p-4 mt-5"type="number" id="number" placeholder="Number"><br>
-    <input class="rounded-2xl p-5 mt-5"type="text" id="title" placeholder="Mutu wa nyimbo"><br>
-   <textarea class="p-5 m-12"id="verse" style=" height:250px;" placeholder="lembani verse yonse muno..."></textarea>
-   <button class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="deleteByNumberField()">delete nyimbo</button>
-  <button class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="addNyimbo()">Save Nyimbo</button>
-  <p id="message"></p>
+  <form>
+    <input class="rounded-2xl p-4 mt-5"type="number" id="number" placeholder="Number"required><br>
+    <input class="rounded-2xl p-5 mt-5"type="text" id="title" placeholder="Mutu wa nyimbo"required><br>
+   <textarea class="p-5 m-12"id="verse" style=" height:250px;" placeholder="lembani verse yonse muno..."required></textarea>
+   <button class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="deleteByNumberField()" >delete nyimbo</button>
+  <button type="button"class="bg-yellow-600 rounded-full p-3 text-white font-bold"onclick="addNyimbo()">Save Nyimbo</button>
+  <p id="message"></p></form>
+
 </div>
     
 
