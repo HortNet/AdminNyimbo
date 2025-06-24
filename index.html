@@ -29,21 +29,56 @@ import { getFirestore, collection, addDoc, query, where, getDocs, deleteDoc, doc
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-async function deleteByNumberField() {
-  const q = query(
-    collection(db, "nyimbos"),          // Replace with your collection
-    where("number", "==", 269)        // Replace with your field and number
-  );
-
-  const querySnapshot = await getDocs(q);
-
-  querySnapshot.forEach(async (document) => {
-    await deleteDoc(doc(db, "nyimbos", document.id));
-    console.log(`Deleted document with ID: ${document.id}`);
-  });
+   
+   function getDownloadableLink(driveLink) {
+    const match = driveLink.match(/\/d\/([a-zA-Z0-9_-]{25,})/);
+    if (!match) return null;
+    const fileId = match[1];
+    return `https://drive.google.com/uc?export=download&id=${fileId}`;
 }
 
-deleteByNumberField();
+
+// Example usage:
+
+
+  // Define function AFTER db is ready
+   async function insertLinkToFirestore() {
+  const msgEl = document.getElementById('message2');
+  const number = document.getElementById("number2").value.trim();
+  const originalLink =  document.getElementById("link").value.trim();
+  const link = getDownloadableLink(originalLink);
+    
+  
+    if (!link) {
+    msgEl.textContent = "Invalid Google Drive link.";
+    return;
+}
+
+
+  
+  // Validation
+  if (!number || !originalLink) {
+    msgEl.textContent = "Please fill in all fields before saving.";
+    return; // stop execution if invalid
+  }
+
+  msgEl.textContent = 'Adding data...';
+
+  try {
+    const docRef = await addDoc(collection(db, "audios"), {
+      number: parseInt(number),
+      Link: link,
+      timestamp: serverTimestamp()
+      
+    });
+    msgEl.textContent = "Data added successfully with ID: " + docRef.id;
+  } catch (error) {
+    msgEl.textContent = "Error adding document: " + error.message;
+  }
+}
+
+
+    
 
     // Define function AFTER db is ready
    async function addNyimbo() {
@@ -51,7 +86,7 @@ deleteByNumberField();
   const number = document.getElementById("number").value.trim();
   const title = document.getElementById("title").value.trim();
   const verse = document.getElementById("verse").value.trim();
-
+  
   // Validation
   if (!number || !title || !verse) {
     msgEl.textContent = "Please fill in all fields before saving.";
@@ -76,7 +111,9 @@ deleteByNumberField();
 
 
     // Expose the function globally so button can call it
-    window.addNyimbo = addNyimbo;
+     window.addNyimbo = addNyimbo;
+     window.insertLinkToFirestore = insertLinkToFirestore;
+
   </script>
    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
@@ -85,7 +122,7 @@ deleteByNumberField();
   <h1 class="text-center text-white text-2xl font-bold max-w-xl">MPINGO WOBWEZELETSA SABATA LA YEHOVA</h1>
   <h2 class="text-center text-white text-2xl mt-4 max-w-xl">NYIMBO ZOIMBIRA YEHOVA</h2>
 
-  <div class="grid sm:grid-cols-3 m-12">
+  <div class="grid grid-cols-3 m-12">
   <div class="bg-red-200 h-64 flex justify-center items-center">
     
  <button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 m-8"><span class="material-icons text-6xl ">add</span>Add Nyimbo</button>
@@ -148,6 +185,50 @@ deleteByNumberField();
 
 
       <p id="message" class="text-center text-white mt-4 min-h-[1.5em]"></p>
+
+    </form>
+
+  </div>
+
+
+  <div  style="background-color:#4AB8CE;"class=" mt-4 rounded-2xl p-6 max-w-xl w-full">
+
+    <form class="flex flex-col space-y-6">
+
+      <input
+        type="number"
+        id="number2"
+        placeholder="Number"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+      <input
+        type="text"
+        id="link"
+        placeholder="paste link here"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+     
+
+      <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
+  
+
+  <div class="ml-auto">
+    <button
+      type="button"
+      onclick="insertLinkToFirestore()"
+      class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+
+      <p id="message2" class="text-center text-white mt-4 min-h-[1.5em]"></p>
 
     </form>
 
