@@ -81,6 +81,7 @@ async function insertLinkToFirestore() {
       await setDoc(doc(db, "audios", docId), {
         number: parseInt(number),
         Link: link,
+        isDeleted: false,
         timestamp: serverTimestamp()
       });
       msgEl.textContent = "Audio link updated successfully!";
@@ -88,6 +89,7 @@ async function insertLinkToFirestore() {
       const newDocRef = await addDoc(collection(db, "audios"), {
         number: parseInt(number),
         Link: link,
+        isDeleted: false,
         timestamp: serverTimestamp()
       });
       msgEl.textContent = "Audio link added with ID: " + newDocRef.id;
