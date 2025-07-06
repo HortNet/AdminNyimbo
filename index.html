@@ -1,7 +1,9 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Insert Data</title>
 
   <!-- Tailwind CSS -->
@@ -37,43 +39,52 @@
     </div>
   </div>
 
+  <!-- Add/Update Nyimbo Lyrics -->
   <div style="background-color:#4AB8CE;" class="mt-4 rounded-2xl p-6 max-w-xl w-full">
+    <h1 class="text-white text-2xl text-center p-5">Add/update Nyimbo lyrics</h1>
     <form class="flex flex-col space-y-6">
       <input type="number" id="number" placeholder="Number" required class="rounded-2xl p-4 w-full text-black" />
       <input type="text" id="title" placeholder="Mutu wa nyimbo (uyambe ndi number e.g 30.Mesiya)" required class="rounded-2xl p-4 w-full text-black" />
-      <textarea id="verse" placeholder="Lembani verse yonse muno..." required rows="8" class="rounded-2xl p-4 w-full text-black resize-none"></textarea>
-
+      <textarea id="verse" placeholder="Full lyrics here.." required rows="8" class="rounded-2xl p-4 w-full text-black resize-none"></textarea>
       <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
         <div class="ml-auto">
-          <button type="button" onclick="addNyimbo()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">
-            Save
-          </button>
+          <button type="button" onclick="addNyimbo()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">Save</button>
         </div>
       </div>
-
       <p id="message" class="text-center text-white mt-4 min-h-[1.5em]"></p>
     </form>
   </div>
 
+  <!-- Add/Update Audio -->
   <div style="background-color:#4AB8CE;" class="mt-4 rounded-2xl p-6 max-w-xl w-full">
+    <h1 class="text-white text-2xl text-center p-5">Add/Update Audio</h1>
     <form class="flex flex-col space-y-6">
       <input type="number" id="number2" placeholder="Number" required class="rounded-2xl p-4 w-full text-black" />
       <input type="text" id="link" placeholder="paste link here" required class="rounded-2xl p-4 w-full text-black" />
-
       <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
         <div class="ml-auto">
-          <button type="button" onclick="insertLinkToFirestore()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">
-            Save
-          </button>
+          <button type="button" onclick="insertLinkToFirestore()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">Save</button>
         </div>
       </div>
-
       <p id="message2" class="text-center text-white mt-4 min-h-[1.5em]"></p>
     </form>
   </div>
 
-  <!-- Link to external JavaScript (with type="module") -->
-  <script type="module" src="main.js"></script>
+  <!-- Delete Audio -->
+  <div style="background-color:#4AB8CE;" class="mt-4 rounded-2xl p-6 max-w-xl w-full">
+    <h1 class="text-white text-2xl text-center p-5">Delete Audio</h1>
+    <form class="flex flex-col space-y-6">
+      <input type="number" id="number3" placeholder="Number" required class="rounded-2xl p-4 w-full text-black" />
+      <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
+        <div class="ml-auto">
+          <button type="button" onclick="deleteAudio()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">Save</button>
+        </div>
+      </div>
+      <p id="message3" class="text-center text-white mt-4 min-h-[1.5em]"></p>
+    </form>
+  </div>
 
+  <!-- External JS -->
+  <script type="module" src="main.js"></script>
 </body>
 </html>
