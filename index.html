@@ -1,90 +1,349 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Insert Data</title>
-
-  <!-- Tailwind CSS -->
+  <title>Insert Data </title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- Custom Styles -->
   <style>
     body {
       font-family: 'Roboto', sans-serif;
     }
   </style>
-</head>
+   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  getDocs, 
+  deleteDoc, 
+  doc, 
+  serverTimestamp, 
+  setDoc 
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<body style="background-color: #1B676F;" class="bg-blue-900 flex flex-col items-center justify-center min-h-screen p-4">
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCG_-UFFJ4jCaeFrFRDj8v1Q6QSnWtVOrc",
+      authDomain: "nyimbo-64d23.firebaseapp.com",
+      projectId: "nyimbo-64d23",
+      storageBucket: "nyimbo-64d23.firebasestorage.app",
+      messagingSenderId: "976903482180",
+      appId: "1:976903482180:web:8125b31850f1e221654511",
+      measurementId: "G-0KV815N7JP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+   
+   function getDownloadableLink(driveLink) {
+    const match = driveLink.match(/\/d\/([a-zA-Z0-9_-]{25,})/);
+    if (!match) return null;
+    const fileId = match[1];
+    return `https://drive.google.com/uc?export=download&id=${fileId}`;
+}
+
+
+async function deleteAudio() {
+  const msgEl = document.getElementById('message3');
+  const number = document.getElementById("number3").value.trim();
+  
+
+  if (!number) {
+    msgEl.textContent = "Please fill in all fields before saving.";
+    return;
+  }
+
+  
+
+  msgEl.textContent = 'Deleting...';
+
+  try {
+    const q = query(collection(db, "audios"), where("number", "==", parseInt(number)));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docId = querySnapshot.docs[0].id;
+      await setDoc(doc(db, "audios", docId), {
+        number: parseInt(number),
+        Link: "",
+        isDeleted: true,
+        timestamp: serverTimestamp()
+      });
+      msgEl.textContent = "Audio Deleted successfully!";
+    } else {
+     
+      msgEl.textContent = "Audio number missing: ";
+    }
+  } catch (error) {
+    msgEl.textContent = "Error deleting  document: " + error.message;
+  }
+}
+
+  // Defining audio  function AFTER db is ready
+async function insertLinkToFirestore() {
+  const msgEl = document.getElementById('message2');
+  const number = document.getElementById("number2").value.trim();
+  const originalLink = document.getElementById("link").value.trim();
+  const link = getDownloadableLink(originalLink);
+
+  if (!number || !originalLink) {
+    msgEl.textContent = "Please fill in all fields before saving.";
+    return;
+  }
+
+  if (!link) {
+    msgEl.textContent = "Invalid link.";
+    return;
+  }
+
+  msgEl.textContent = 'Saving...';
+
+  try {
+    const q = query(collection(db, "audios"), where("number", "==", parseInt(number)));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docId = querySnapshot.docs[0].id;
+      await setDoc(doc(db, "audios", docId), {
+        number: parseInt(number),
+        Link: link,
+        isDeleted: false,
+        timestamp: serverTimestamp()
+      });
+      msgEl.textContent = "Audio link updated successfully!";
+    } else {
+      const newDocRef = await addDoc(collection(db, "audios"), {
+        number: parseInt(number),
+        Link: link,
+        isDeleted: false,
+        timestamp: serverTimestamp()
+      });
+      msgEl.textContent = "Audio link added with ID: " + newDocRef.id;
+    }
+  } catch (error) {
+    msgEl.textContent = "Error saving document: " + error.message;
+  }
+}
+
+
+
+    
+
+    // Defining Nyimbo AFTER db is ready
+   
+
+async function addNyimbo() {
+  const msgEl = document.getElementById('message');
+  const number = document.getElementById("number").value.trim();
+  const title = document.getElementById("title").value.trim();
+  const verse = document.getElementById("verse").value.trim();
+
+  if (!number || !title || !verse) {
+    msgEl.textContent = "Please fill in all fields before saving.";
+    return;
+  }
+
+  msgEl.textContent = 'Saving...';
+
+  try {
+    const q = query(collection(db, "nyimbos"), where("number", "==", parseInt(number)));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      // Overwriting  the first match
+      const docId = querySnapshot.docs[0].id;
+      await setDoc(doc(db, "nyimbos", docId), {
+        number: parseInt(number),
+        title: title,
+        verse: verse,
+        timestamp: serverTimestamp(),
+        isDeleted: false
+      });
+      msgEl.textContent = "Nyimbo updated successfully!";
+    } else {
+      // Creating new doc
+      const newDocRef = await addDoc(collection(db, "nyimbos"), {
+        number: parseInt(number),
+        title: title,
+        verse: verse,
+        timestamp: serverTimestamp(),
+        isDeleted: false
+      });
+      msgEl.textContent = "Nyimbo added successfully with ID: " + newDocRef.id;
+    }
+  } catch (error) {
+    msgEl.textContent = "Error saving document: " + error.message;
+  }
+}
+
+
+
+    // Exposing  the addNyimbo ,insertLink functions GLOBALLY
+     window.addNyimbo = addNyimbo;
+     window.insertLinkToFirestore = insertLinkToFirestore;
+     window.deleteAudio=deleteAudio;
+
+
+  </script>
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body style="background-color: #1B676F;"class="bg-blue-900 flex flex-col items-center justify-center min-h-screen p-4">
 
   <h1 class="text-center text-white text-2xl font-bold max-w-xl">MPINGO WOBWEZELETSA SABATA LA YEHOVA</h1>
   <h2 class="text-center text-white text-2xl mt-4 max-w-xl">NYIMBO ZOIMBIRA YEHOVA</h2>
 
   <div class="flex grid grid-cols-2 m-12 justify-between">
-    <div>
-      <button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 mx-4">
-        <span class="material-icons text-6xl">add</span>
-      </button>
-    </div>
-    <div>
-      <button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 mx-4">
-        <span class="material-icons text-6xl">audio_file</span>
-      </button>
-    </div>
+  <div>
+    
+ <button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 mx-4"><span class="material-icons text-6xl ">add</span></button>
   </div>
 
-  <!-- Add/Update Nyimbo Lyrics -->
-  <div style="background-color:#4AB8CE;" class="mt-4 rounded-2xl p-6 max-w-xl w-full">
+    
+ <div>
+<button class="text-center text-2xl font-bold bg-yellow-600 rounded-2xl p-4 text-white px-4 mx-4"><span class="material-icons text-6xl ">audio_file</span></button>
+ </div>
+
+  </div>
+</div>
+ 
+
+  <div  style="background-color:#4AB8CE;"class=" mt-4 rounded-2xl p-6 max-w-xl w-full">
     <h1 class="text-white text-2xl text-center p-5">Add/update Nyimbo lyrics</h1>
     <form class="flex flex-col space-y-6">
-      <input type="number" id="number" placeholder="Number" required class="rounded-2xl p-4 w-full text-black" />
-      <input type="text" id="title" placeholder="Mutu wa nyimbo (uyambe ndi number e.g 30.Mesiya)" required class="rounded-2xl p-4 w-full text-black" />
-      <textarea id="verse" placeholder="Full lyrics here.." required rows="8" class="rounded-2xl p-4 w-full text-black resize-none"></textarea>
+
+      <input
+        type="number"
+        id="number"
+        placeholder="Number"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+      <input
+        type="text"
+        id="title"
+        placeholder="Mutu wa nyimbo (uyambe ndi number e.g 30.Mesiya)"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+      <textarea
+        id="verse"
+        placeholder="Full lyrics here.."
+        required
+        rows="8"
+        class="rounded-2xl p-4 w-full text-black resize-none"
+      ></textarea>
+
       <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
-        <div class="ml-auto">
-          <button type="button" onclick="addNyimbo()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">Save</button>
-        </div>
-      </div>
+  
+
+  <div class="ml-auto">
+    <button
+      type="button"
+      onclick="addNyimbo()"
+      class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+
       <p id="message" class="text-center text-white mt-4 min-h-[1.5em]"></p>
+
     </form>
+
   </div>
 
-  <!-- Add/Update Audio -->
-  <div style="background-color:#4AB8CE;" class="mt-4 rounded-2xl p-6 max-w-xl w-full">
-    <h1 class="text-white text-2xl text-center p-5">Add/Update Audio</h1>
+
+  <div  style="background-color:#4AB8CE;"class=" mt-4 rounded-2xl p-6 max-w-xl w-full">
+    <h1 class="text-white text-2xl text-center p-5">Add/Update  Audio</h1>
     <form class="flex flex-col space-y-6">
-      <input type="number" id="number2" placeholder="Number" required class="rounded-2xl p-4 w-full text-black" />
-      <input type="text" id="link" placeholder="paste link here" required class="rounded-2xl p-4 w-full text-black" />
+
+      <input
+        type="number"
+        id="number2"
+        placeholder="Number"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+      <input
+        type="text"
+        id="link"
+        placeholder="paste link here"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+     
+
       <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
-        <div class="ml-auto">
-          <button type="button" onclick="insertLinkToFirestore()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">Save</button>
-        </div>
-      </div>
+  
+
+  <div class="ml-auto">
+    <button
+      type="button"
+      onclick="insertLinkToFirestore()"
+      class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+
       <p id="message2" class="text-center text-white mt-4 min-h-[1.5em]"></p>
+
     </form>
+
   </div>
 
-  <!-- Delete Audio -->
-  <div style="background-color:#4AB8CE;" class="mt-4 rounded-2xl p-6 max-w-xl w-full">
-    <h1 class="text-white text-2xl text-center p-5">Delete Audio</h1>
+  <div  style="background-color:#4AB8CE;"class=" mt-4 rounded-2xl p-6 max-w-xl w-full">
+<h1 class="text-white text-2xl text-center p-5">Delete Audio</h1>
     <form class="flex flex-col space-y-6">
-      <input type="number" id="number3" placeholder="Number" required class="rounded-2xl p-4 w-full text-black" />
+
+      <input
+        type="number"
+        id="number3"
+        placeholder="Number"
+        required
+        class="rounded-2xl p-4 w-full text-black"
+      />
+
+     
+
+     
+
       <div style="background-color: #1B676F;" class="text-white p-4 flex flex-row flex-wrap space-x-4">
-        <div class="ml-auto">
-          <button type="button" onclick="deleteAudio()" class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto">Save</button>
-        </div>
-      </div>
+  
+
+  <div class="ml-auto">
+    <button
+      type="button"
+      onclick="deleteAudio()"
+      class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+
       <p id="message3" class="text-center text-white mt-4 min-h-[1.5em]"></p>
+
     </form>
+
   </div>
 
-  <!-- External JS -->
-  <script type="module" src="main.js"></script>
 </body>
+
 </html>
