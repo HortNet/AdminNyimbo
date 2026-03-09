@@ -183,9 +183,51 @@ async function addNyimbo() {
   }
 }
 
+async function DeleteNyimbo() {
+  const msgEl = document.getElementById('message');
+  const number = document.getElementById("numberToDelete").value.trim();
+
+  if (!number) {
+    msgEl.textContent = "Please enter a number to delete.";
+    return;
+  }
+
+  msgEl.textContent = "Deleting...";
+
+  try {
+    const q = query(
+      collection(db, "nyimbos"),
+      where("number", "==", parseInt(number))
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+
+      const docRef = querySnapshot.docs[0].ref;
+
+      await setDoc(
+        docRef,
+        {
+          isDeleted: true,
+          timestamp: serverTimestamp()
+        },
+        { merge: true } // keeps other fields
+      );
+
+      msgEl.textContent = "Nyimbo marked as deleted successfully!";
+    } else {
+      msgEl.textContent = "Failed: Nyimbo number does not exist.";
+    }
+
+  } catch (error) {
+    msgEl.textContent = "Error deleting Nyimbo: " + error.message;
+  }
+}
 
 
     // Exposing  the addNyimbo ,insertLink functions GLOBALLY
+     window.DeleteNyimbo = DeleteNyimbo;
      window.addNyimbo = addNyimbo;
      window.insertLinkToFirestore = insertLinkToFirestore;
      window.deleteAudio=deleteAudio;
@@ -253,6 +295,7 @@ async function addNyimbo() {
     >
       Save
     </button>
+  
   </div>
 </div>
 
@@ -260,7 +303,23 @@ async function addNyimbo() {
       <p id="message" class="text-center text-white mt-4 min-h-[1.5em]"></p>
 
     </form>
+   <div class="flex bg-black p-4 gap-4 items-center">
+  <button
+    type="button"
+    onclick="DeleteNyimbo()"
+    class="bg-red-900 rounded-full py-2 px-8 text-white font-bold"
+  >
+    Delete Nyimbo
+  </button>
 
+  <input
+    type="number"
+    id="numberToDelete"
+    placeholder="Number to Delete"
+    required
+    class="rounded-2xl p-4 text-black"
+  />
+</div>
   </div>
 
 
