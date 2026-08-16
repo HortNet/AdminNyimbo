@@ -225,13 +225,105 @@ async function DeleteNyimbo() {
   }
 }
 
+async function addUnnumberedAudio() {
+  const msgEl = document.getElementById('messageUnnumbered');
+
+  const originalAudioLink =
+    document.getElementById("unnumberedAudioLink").value.trim();
+
+  const title =
+    document.getElementById("unnumberedTitle").value.trim();
+
+  const verseInput =
+    document.getElementById("unnumberedVerse").value.trim();
+
+
+  // =========================
+  // CHECK TITLE
+  // =========================
+  if (!title) {
+    msgEl.textContent = "Please enter the title.";
+    return;
+  }
+
+
+  // =========================
+  // CHECK AUDIO LINK
+  // =========================
+  if (!originalAudioLink) {
+    msgEl.textContent = "Please enter the Google Drive audio link.";
+    return;
+  }
+
+
+  // =========================
+  // CONVERT GOOGLE DRIVE LINK
+  // =========================
+  const audioLink = getDownloadableLink(originalAudioLink);
+
+
+  // =========================
+  // VALIDATE GOOGLE DRIVE LINK
+  // =========================
+  if (!audioLink) {
+    msgEl.textContent =
+      "Invalid Google Drive link. Please paste a valid Google Drive file link.";
+    return;
+  }
+
+
+  // =========================
+  // VERSE IS OPTIONAL
+  // =========================
+  const verse = verseInput === "" ? null : verseInput;
+
+
+  msgEl.textContent = "Saving...";
+
+
+  try {
+
+    // =========================
+    // SAVE TO UNNUMBERED
+    // =========================
+    const newDocRef = await addDoc(
+      collection(db, "unnumbered"),
+      {
+        audiolink: audioLink,
+        title: title,
+        verse: verse,
+        timestamp: serverTimestamp()
+      }
+    );
+
+
+    // =========================
+    // SUCCESS
+    // =========================
+    msgEl.textContent = "Audio added successfully!";
+
+
+    // Clear inputs
+    document.getElementById("unnumberedAudioLink").value = "";
+    document.getElementById("unnumberedTitle").value = "";
+    document.getElementById("unnumberedVerse").value = "";
+
+
+  } catch (error) {
+
+    msgEl.textContent =
+      "Error saving audio: " + error.message;
+
+  }
+}
+
 
     // Exposing  the addNyimbo ,insertLink functions GLOBALLY
      window.DeleteNyimbo = DeleteNyimbo;
      window.addNyimbo = addNyimbo;
      window.insertLinkToFirestore = insertLinkToFirestore;
      window.deleteAudio=deleteAudio;
-
+     window.addUnnumberedAudio = addUnnumberedAudio;
 
   </script>
    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -365,6 +457,70 @@ async function DeleteNyimbo() {
     </form>
 
   </div> -->
+
+
+  <div
+  style="background-color:#4AB8CE;"
+  class="mt-4 rounded-2xl p-6 max-w-xl w-full"
+>
+
+  <h1 class="text-white text-2xl text-center p-5">
+    Add Unnumbered Audio
+  </h1>
+
+  <form class="flex flex-col space-y-6">
+
+    <!-- Audio Link -->
+    <input
+      type="text"
+      id="unnumberedAudioLink"
+      placeholder="Paste audio link here"
+      required
+      class="rounded-2xl p-4 w-full text-black"
+    />
+
+    <!-- Title -->
+    <input
+      type="text"
+      id="unnumberedTitle"
+      placeholder="Title"
+      required
+      class="rounded-2xl p-4 w-full text-black"
+    />
+
+    <!-- Verse - Optional -->
+    <textarea
+      id="unnumberedVerse"
+      placeholder="Verse (optional)"
+      rows="5"
+      class="rounded-2xl p-4 w-full text-black resize-none"
+    ></textarea>
+
+    <div
+      style="background-color: #1B676F;"
+      class="text-white p-4 flex flex-row flex-wrap space-x-4"
+    >
+
+      <div class="ml-auto">
+        <button
+          type="button"
+          onclick="addUnnumberedAudio()"
+          class="bg-yellow-600 rounded-full py-2 px-8 text-white font-bold w-full sm:w-auto"
+        >
+          Save
+        </button>
+      </div>
+
+    </div>
+
+    <p
+      id="messageUnnumbered"
+      class="text-center text-white mt-4 min-h-[1.5em]"
+    ></p>
+
+  </form>
+
+</div>
 
   <div  style="background-color:#4AB8CE;"class=" mt-4 rounded-2xl p-6 max-w-xl w-full">
 <h1 class="text-white text-2xl text-center p-5">Delete Audio</h1>
