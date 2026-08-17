@@ -13,17 +13,18 @@
    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  query, 
-  where, 
-  getDocs, 
-  deleteDoc, 
-  doc, 
-  serverTimestamp, 
-  setDoc 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
@@ -133,7 +134,98 @@ async function insertLinkToFirestore() {
 }
 
 
+// ==========================================================
+// LOAD EXISTING NYIMBO WHEN NUMBER IS ENTERED
+// ==========================================================
 
+// ==========================================================
+// LOAD EXISTING NYIMBO WHEN NUMBER IS ENTERED
+// ==========================================================
+
+async function loadNyimboByNumber() {
+
+  const numberInput = document.getElementById("number");
+  const titleInput = document.getElementById("title");
+  const verseInput = document.getElementById("verse");
+  const msgEl = document.getElementById("message");
+
+  const numberText = numberInput.value.trim();
+
+  // If number is empty, clear the fields
+  if (!numberText) {
+    titleInput.value = "";
+    verseInput.value = "";
+    msgEl.textContent = "";
+    return;
+  }
+
+  const songNumber = parseInt(numberText, 10);
+
+  if (isNaN(songNumber)) {
+    msgEl.textContent = "Please enter a valid Nyimbo number.";
+    return;
+  }
+
+  msgEl.textContent = "Checking Nyimbo...";
+
+  try {
+
+    const q = query(
+      collection(db, "nyimbos"),
+      where("number", "==", songNumber)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    // ======================================================
+    // NYIMBO FOUND
+    // ======================================================
+
+    if (!querySnapshot.empty) {
+
+      const songDoc = querySnapshot.docs[0];
+      const data = songDoc.data();
+
+      // Fill title if it exists
+      titleInput.value =
+        data.title !== null && data.title !== undefined
+          ? data.title
+          : "";
+
+      // Fill verse if it exists
+      verseInput.value =
+        data.verse !== null && data.verse !== undefined
+          ? data.verse
+          : "";
+
+      msgEl.textContent =
+        "Nyimbo " + songNumber + " found. You can edit the title or lyrics.";
+
+    }
+
+    // ======================================================
+    // NYIMBO NOT FOUND
+    // ======================================================
+
+    else {
+
+      titleInput.value = "";
+      verseInput.value = "";
+
+      msgEl.textContent =
+        "Nyimbo " + songNumber +
+        " not found. Enter the title and lyrics from scratch.";
+
+    }
+
+  } catch (error) {
+
+    console.error("Error loading Nyimbo:", error);
+
+    msgEl.textContent =
+      "Error checking Nyimbo: " + error.message;
+  }
+}
     
 
     // Defining Nyimbo AFTER db is ready
@@ -267,7 +359,7 @@ async function addUnnumberedAudio() {
   // =========================
   if (!audioLink) {
     msgEl.textContent =
-      "Invalid link.";
+      "Invalid Google Drive link. Please paste a valid Google Drive file link.";
     return;
   }
 
@@ -324,6 +416,7 @@ async function addUnnumberedAudio() {
      window.insertLinkToFirestore = insertLinkToFirestore;
      window.deleteAudio=deleteAudio;
      window.addUnnumberedAudio = addUnnumberedAudio;
+     window.loadNyimboByNumber = loadNyimboByNumber;
 
   </script>
    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -352,13 +445,14 @@ async function addUnnumberedAudio() {
     <h1 class="text-white text-2xl text-center p-5">Add/update Nyimbo lyrics</h1>
     <form class="flex flex-col space-y-6">
 
-      <input
-        type="number"
-        id="number"
-        placeholder="Number"
-        required
-        class="rounded-2xl p-4 w-full text-black"
-      />
+   <input
+  type="number"
+  id="number"
+  placeholder="Number"
+  required
+  class="rounded-2xl p-4 w-full text-black"
+  onblur="loadNyimboByNumber()"
+/>
 
       <input
         type="text"
