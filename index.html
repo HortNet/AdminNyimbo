@@ -318,6 +318,7 @@ async function DeleteNyimbo() {
 }
 
 async function addUnnumberedAudio() {
+
   const msgEl = document.getElementById('messageUnnumbered');
 
   const originalAudioLink =
@@ -343,7 +344,7 @@ async function addUnnumberedAudio() {
   // CHECK AUDIO LINK
   // =========================
   if (!originalAudioLink) {
-    msgEl.textContent = "Please enter the valid uadio link";
+    msgEl.textContent = "Please enter the valid audio link";
     return;
   }
 
@@ -351,15 +352,15 @@ async function addUnnumberedAudio() {
   // =========================
   // CONVERT GOOGLE DRIVE LINK
   // =========================
-  const audioLink = getDownloadableLink(originalAudioLink);
+  const audioLink =
+    getDownloadableLink(originalAudioLink);
 
 
   // =========================
   // VALIDATE GOOGLE DRIVE LINK
   // =========================
   if (!audioLink) {
-    msgEl.textContent =
-      "Invalid link.";
+    msgEl.textContent = "Invalid link.";
     return;
   }
 
@@ -367,7 +368,8 @@ async function addUnnumberedAudio() {
   // =========================
   // VERSE IS OPTIONAL
   // =========================
-  const verse = verseInput === "" ? null : verseInput;
+  const verse =
+    verseInput === "" ? null : verseInput;
 
 
   msgEl.textContent = "Saving...";
@@ -384,7 +386,8 @@ async function addUnnumberedAudio() {
         audiolink: audioLink,
         title: title,
         verse: verse,
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
+        isDeleted: false
       }
     );
 
@@ -392,20 +395,28 @@ async function addUnnumberedAudio() {
     // =========================
     // SUCCESS
     // =========================
-    msgEl.textContent = "Audio added successfully!";
+    msgEl.textContent =
+      "Audio added successfully!";
 
 
     // Clear inputs
-    document.getElementById("unnumberedAudioLink").value = "";
-    document.getElementById("unnumberedTitle").value = "";
-    document.getElementById("unnumberedVerse").value = "";
+    document.getElementById(
+      "unnumberedAudioLink"
+    ).value = "";
+
+    document.getElementById(
+      "unnumberedTitle"
+    ).value = "";
+
+    document.getElementById(
+      "unnumberedVerse"
+    ).value = "";
 
 
   } catch (error) {
 
     msgEl.textContent =
       "Error saving audio: " + error.message;
-
   }
 }
 
